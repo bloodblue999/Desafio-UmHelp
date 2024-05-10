@@ -1,16 +1,16 @@
 package main
 
 import (
+	"github.com/bloodblue999/umhelp/config"
+	"github.com/bloodblue999/umhelp/logger"
+	"github.com/bloodblue999/umhelp/repo"
+	"github.com/bloodblue999/umhelp/server"
+	"github.com/bloodblue999/umhelp/server/controller"
+	"github.com/bloodblue999/umhelp/service"
 	"os"
 	"time"
 
 	"github.com/rs/zerolog"
-	"github.com/savi2w/pupper/config"
-	"github.com/savi2w/pupper/logger"
-	"github.com/savi2w/pupper/repo"
-	"github.com/savi2w/pupper/server"
-	"github.com/savi2w/pupper/server/controller"
-	"github.com/savi2w/pupper/service"
 )
 
 func main() {
