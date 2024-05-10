@@ -1,10 +1,10 @@
 package health
 
 import (
+	"github.com/bloodblue999/umhelp/util/resutil"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/savi2w/pupper/util/resutil"
 )
 
 type Controller struct {

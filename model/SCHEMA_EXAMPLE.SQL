@@ -8,7 +8,7 @@ CREATE TABLE tb_user_account
     id         BIGINT PRIMARY KEY AUTO_INCREMENT,
     first_name VARCHAR(30)  NOT NULL,
     last_name  VARCHAR(255) NOT NULL,
-    document   VARCHAR(14)  NOT NULL,
+    document   VARCHAR(14)  NOT NULL UNIQUE,
     balance    BIGINT       NOT NULL,
     created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

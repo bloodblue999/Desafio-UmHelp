@@ -1,10 +1,10 @@
 package logger
 
 import (
+	"github.com/bloodblue999/umhelp/config"
 	"os"
 
 	"github.com/rs/zerolog"
-	"github.com/savi2w/pupper/config"
 )
 
 func New(cfg *config.Config) *zerolog.Logger {

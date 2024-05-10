@@ -1,9 +1,9 @@
 package repo
 
 import (
-	"github.com/savi2w/pupper/config"
-	"github.com/savi2w/pupper/repo/mysql"
-	"github.com/savi2w/pupper/repo/redis"
+	"github.com/bloodblue999/umhelp/config"
+	"github.com/bloodblue999/umhelp/repo/mysql"
+	"github.com/bloodblue999/umhelp/repo/redis"
 )
 
 type RepoManager struct {

@@ -1,4 +1,4 @@
-module github.com/savi2w/pupper
+module github.com/bloodblue999/umhelp
 
 go 1.21.0
 
@@ -28,6 +28,7 @@ require (
 	github.com/redis/go-redis/v9 v9.5.1 // indirect
 	github.com/sagikazarmark/locafero v0.3.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
+	github.com/savi2w/pupper v0.0.0-20240508020900-e1e6c68f4405 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.10.0 // indirect
 	github.com/spf13/cast v1.5.1 // indirect

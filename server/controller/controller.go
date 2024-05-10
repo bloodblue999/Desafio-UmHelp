@@ -1,20 +1,23 @@
 package controller
 
 import (
+	"github.com/bloodblue999/umhelp/server/controller/health"
+	"github.com/bloodblue999/umhelp/server/controller/useraccount"
+	"github.com/bloodblue999/umhelp/service"
+	"github.com/bloodblue999/umhelp/util/resutil"
 	"github.com/rs/zerolog"
-	"github.com/savi2w/pupper/server/controller/health"
-	"github.com/savi2w/pupper/service"
-	"github.com/savi2w/pupper/util/resutil"
 )
 
 type Controller struct {
-	HealthController *health.Controller
+	HealthController      *health.Controller
+	UserAccountController *useraccount.Controller
 }
 
 func New(svc *service.Service, logger *zerolog.Logger) *Controller {
 	resutil := resutil.New(logger)
 
 	return &Controller{
-		HealthController: health.New(resutil),
+		HealthController:      health.New(resutil),
+		UserAccountController: useraccount.New(logger, resutil, svc),
 	}
 }
