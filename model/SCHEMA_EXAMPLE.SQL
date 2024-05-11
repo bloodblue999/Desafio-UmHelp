@@ -1,6 +1,7 @@
 CREATE DATABASE IF NOT EXISTS um_help;
 USE um_help;
 
+DROP TABLE IF EXISTS tb_money_transaction;
 DROP TABLE IF EXISTS tb_user_account;
 
 CREATE TABLE tb_user_account

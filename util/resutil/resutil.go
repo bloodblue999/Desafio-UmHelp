@@ -26,8 +26,10 @@ func (r *ResUtil) Wrap(data interface{}, err error, status int) (code int, resp 
 	if err != nil {
 		switch {
 		case status >= 500:
+			message := "internal server error, verify API logs"
+
 			r.logger.Error().Err(err).Msg(err.Error())
-			resp.Message = nil
+			resp.Message = &message
 		case status >= 400:
 			message := err.Error()
 
