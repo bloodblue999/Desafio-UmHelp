@@ -29,10 +29,10 @@ func (ctrl *Controller) HandleNewUserAccount(ctx echo.Context) error {
 		return ctx.JSON(ctrl.resutil.Wrap(nil, err, http.StatusBadRequest))
 	}
 
-	err = ctrl.services.UserAccount.NewUserAccount(ctx.Request().Context(), req)
+	data, err := ctrl.services.UserAccount.NewUserAccount(ctx.Request().Context(), req)
 	if err != nil {
 		return ctx.JSON(ctrl.resutil.Wrap(nil, err, http.StatusInternalServerError))
 	}
 
-	return ctx.JSON(ctrl.resutil.Wrap(nil, nil, http.StatusCreated))
+	return ctx.JSON(ctrl.resutil.Wrap(data, nil, http.StatusCreated))
 }
