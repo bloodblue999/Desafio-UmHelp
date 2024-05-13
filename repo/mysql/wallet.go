@@ -10,18 +10,23 @@ type Wallet struct {
 	cli *sqlx.DB
 }
 
-func (r Wallet) InsertWallet(ctx context.Context, walletModel *model.Wallet, transaction *sqlx.Tx) error {
+func (r Wallet) InsertWallet(ctx context.Context, walletModel *model.Wallet, transaction *sqlx.Tx) (int64, error) {
 	query := `INSERT INTO tb_wallet (alias, owner_id, currency_id) 
 		VALUES (?,?,?)`
 
-	_, err := transaction.ExecContext(ctx, query,
+	result, err := transaction.ExecContext(ctx, query,
 		walletModel.Alias,
 		walletModel.OwnerID,
 		walletModel.CurrencyID,
 	)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	walletId, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return walletId, nil
 }
