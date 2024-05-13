@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"context"
 	"github.com/bloodblue999/umhelp/config"
 	"time"
 
@@ -12,6 +13,7 @@ type Repo struct {
 	cli *sqlx.DB
 
 	UserAccount *UserAccount
+	Wallet      *Wallet
 }
 
 func New(cfg *config.Config) (*Repo, error) {
@@ -33,5 +35,15 @@ func New(cfg *config.Config) (*Repo, error) {
 	return &Repo{
 		cli:         cli,
 		UserAccount: &UserAccount{cli: cli},
+		Wallet:      &Wallet{cli: cli},
 	}, nil
+}
+
+func (db Repo) BeginTransaction(ctx context.Context) (*sqlx.Tx, error) {
+	tx, err := db.cli.BeginTxx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return tx, nil
 }

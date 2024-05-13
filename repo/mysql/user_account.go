@@ -10,19 +10,22 @@ type UserAccount struct {
 	cli *sqlx.DB
 }
 
-func (b *UserAccount) InsertUserAccount(ctx context.Context, userAccountModel *model.UserAccount) error {
-	query := `INSERT INTO um_help.tb_user_account (first_name, last_name, document, balance)
-				VALUES (?, ?, ?, ?)`
-
-	_, err := b.cli.ExecContext(ctx, query,
+func (b *UserAccount) InsertUserAccount(ctx context.Context, userAccountModel *model.UserAccount, transaction *sqlx.Tx) (int64, error) {
+	query := `INSERT INTO um_help.tb_user_account (first_name, last_name, document)
+				VALUES (?, ?, ?)`
+	result, err := transaction.ExecContext(ctx, query,
 		userAccountModel.FirstName,
 		userAccountModel.LastName,
 		userAccountModel.Document,
-		userAccountModel.Balance,
 	)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	userID, err := result.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return userID, nil
 }

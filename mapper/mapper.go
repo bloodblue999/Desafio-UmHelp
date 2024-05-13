@@ -14,6 +14,17 @@ func UserAccountModelToRes(userAccountModel *model.UserAccount) *res.UserAccount
 		FirstName: userAccountModel.FirstName,
 		LastName:  userAccountModel.LastName,
 		Document:  userAccountModel.Document,
-		Balance:   userAccountModel.Balance,
+	}
+}
+
+func WalletModelToRes(walletModel *model.Wallet) *res.Wallet {
+	if walletModel == nil {
+		return nil
+	}
+
+	return &res.Wallet{
+		Alias:      walletModel.Alias,
+		Balance:    walletModel.Balance,
+		CurrencyID: walletModel.CurrencyID,
 	}
 }
