@@ -35,12 +35,28 @@ func (s UserAccountService) NewUserAccount(ctx context.Context, req *req.CreateU
 		Document:  req.Document,
 	}
 
-	userID, err := s.RepoManager.MySQL.UserAccount.InsertUserAccount(ctx, userAccountModel)
+	transaction, err := s.RepoManager.MySQL.BeginTransaction(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	walletRes, err := s.Services.Wallet.CreateWallet(ctx, "Default wallet", userID, consts.BRL_ID)
+	defer transaction.Rollback()
+
+	userID, err := s.RepoManager.MySQL.UserAccount.InsertUserAccount(ctx, userAccountModel, transaction)
+	if err != nil {
+		return nil, err
+	}
+
+	walletRes, err := s.Services.Wallet.CreateWallet(ctx, "Default wallet", userID, consts.BrlId, transaction)
+	if err != nil {
+		return nil, err
+	}
+
+	err = transaction.Commit()
+	if err != nil {
+		return nil, err
+	}
+
 	userAccountRes := mapper.UserAccountModelToRes(userAccountModel)
 
 	return &res.CreateUserAccount{

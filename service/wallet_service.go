@@ -7,6 +7,7 @@ import (
 	"github.com/bloodblue999/umhelp/model"
 	"github.com/bloodblue999/umhelp/presenter/res"
 	"github.com/bloodblue999/umhelp/repo"
+	"github.com/jmoiron/sqlx"
 	"github.com/rs/zerolog"
 )
 
@@ -24,14 +25,14 @@ func NewWalletService(cfg *config.Config, logger *zerolog.Logger, repo *repo.Rep
 	}
 }
 
-func (s WalletService) CreateWallet(ctx context.Context, alias string, ownerID, currencyID int64) (*res.Wallet, error) {
+func (s WalletService) CreateWallet(ctx context.Context, alias string, ownerID, currencyID int64, transaction *sqlx.Tx) (*res.Wallet, error) {
 	walletModel := &model.Wallet{
 		Alias:      alias,
 		OwnerID:    ownerID,
 		CurrencyID: currencyID,
 	}
 
-	err := s.RepoManager.MySQL.Wallet.InsertWallet(ctx, walletModel)
+	err := s.RepoManager.MySQL.Wallet.InsertWallet(ctx, walletModel, transaction)
 	if err != nil {
 		return nil, err
 	}

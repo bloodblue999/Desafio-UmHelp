@@ -1,3 +1,3 @@
 package consts
 
-const BRL_ID int64 = 1
+const BrlId int64 = 1
