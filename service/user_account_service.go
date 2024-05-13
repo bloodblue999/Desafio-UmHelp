@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"database/sql"
 	"github.com/bloodblue999/umhelp/config"
 	"github.com/bloodblue999/umhelp/consts"
 	"github.com/bloodblue999/umhelp/mapper"
@@ -34,7 +35,7 @@ func (s UserAccountService) NewUserAccount(ctx context.Context, req *req.CreateU
 		Document:  req.Document,
 	}
 
-	transaction, err := s.RepoManager.MySQL.BeginTransaction(ctx)
+	transaction, err := s.RepoManager.MySQL.BeginTransaction(ctx, sql.LevelReadCommitted)
 	if err != nil {
 		return nil, err
 	}

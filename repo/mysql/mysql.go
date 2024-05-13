@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"context"
+	"database/sql"
 	"github.com/bloodblue999/umhelp/config"
 	"time"
 
@@ -39,8 +40,10 @@ func New(cfg *config.Config) (*Repo, error) {
 	}, nil
 }
 
-func (db Repo) BeginTransaction(ctx context.Context) (*sqlx.Tx, error) {
-	tx, err := db.cli.BeginTxx(ctx, nil)
+func (db Repo) BeginTransaction(ctx context.Context, level sql.IsolationLevel) (*sqlx.Tx, error) {
+	tx, err := db.cli.BeginTxx(ctx, &sql.TxOptions{
+		Isolation: level,
+	})
 	if err != nil {
 		return nil, err
 	}

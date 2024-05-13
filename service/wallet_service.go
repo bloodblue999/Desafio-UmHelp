@@ -31,19 +31,7 @@ func (s WalletService) CreateWallet(ctx context.Context, alias string, ownerID, 
 		CurrencyID: currencyID,
 	}
 
-	transaction, err := s.RepoManager.MySQL.BeginTransaction(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	defer transaction.Rollback()
-
-	_, err = s.RepoManager.MySQL.Wallet.InsertWallet(ctx, walletModel, transaction)
-	if err != nil {
-		return nil, err
-	}
-
-	err = transaction.Commit()
+	_, err := s.RepoManager.MySQL.Wallet.InsertWallet(ctx, walletModel, nil)
 	if err != nil {
 		return nil, err
 	}
