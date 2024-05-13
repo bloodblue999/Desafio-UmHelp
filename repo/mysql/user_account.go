@@ -13,7 +13,13 @@ type UserAccount struct {
 func (b *UserAccount) InsertUserAccount(ctx context.Context, userAccountModel *model.UserAccount, transaction *sqlx.Tx) (int64, error) {
 	query := `INSERT INTO um_help.tb_user_account (first_name, last_name, document)
 				VALUES (?, ?, ?)`
-	result, err := transaction.ExecContext(ctx, query,
+
+	exec := b.cli.ExecContext
+	if transaction != nil {
+		exec = transaction.ExecContext
+	}
+
+	result, err := exec(ctx, query,
 		userAccountModel.FirstName,
 		userAccountModel.LastName,
 		userAccountModel.Document,
