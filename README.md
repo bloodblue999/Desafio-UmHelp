@@ -1,6 +1,6 @@
-# Pupper
+# Um Help Desafio
 
-Pupper is a simple Golang boilerplate aiming to be the starting point of a scalable HTTP server
+Implementando o desafio da Um Help
 
 ## License
 
