@@ -19,12 +19,11 @@ type UserAccountService struct {
 	Services    *Service
 }
 
-func NewUserAccountService(cfg *config.Config, logger *zerolog.Logger, repo *repo.RepoManager, services *Service) *UserAccountService {
+func NewUserAccountService(cfg *config.Config, logger *zerolog.Logger, repo *repo.RepoManager) *UserAccountService {
 	return &UserAccountService{
 		Config:      cfg,
 		Logger:      logger,
 		RepoManager: repo,
-		Services:    services,
 	}
 }
 
@@ -47,7 +46,12 @@ func (s UserAccountService) NewUserAccount(ctx context.Context, req *req.CreateU
 		return nil, err
 	}
 
-	walletRes, err := s.Services.Wallet.CreateWallet(ctx, "Default wallet", userID, consts.BrlId, transaction)
+	walletModel := &model.Wallet{
+		Alias:      "Default wallet",
+		OwnerID:    userID,
+		CurrencyID: consts.BrlId,
+	}
+	_, err = s.RepoManager.MySQL.Wallet.InsertWallet(ctx, walletModel, transaction)
 	if err != nil {
 		return nil, err
 	}
@@ -58,6 +62,7 @@ func (s UserAccountService) NewUserAccount(ctx context.Context, req *req.CreateU
 	}
 
 	userAccountRes := mapper.UserAccountModelToRes(userAccountModel)
+	walletRes := mapper.WalletModelToRes(walletModel)
 
 	return &res.CreateUserAccount{
 		UserAccount: userAccountRes,

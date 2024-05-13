@@ -12,8 +12,8 @@ type Service struct {
 }
 
 func New(cfg *config.Config, logger *zerolog.Logger, repo *repo.RepoManager) *Service {
-	service := &Service{}
-	service.Wallet = NewWalletService(cfg, logger, repo)
-	service.UserAccount = NewUserAccountService(cfg, logger, repo, service)
-	return service
+	return &Service{
+		Wallet:      NewWalletService(cfg, logger, repo),
+		UserAccount: NewUserAccountService(cfg, logger, repo),
+	}
 }
