@@ -9,12 +9,7 @@ import (
 )
 
 func GetAndValidateCreateUserAccount(rc io.ReadCloser) (r *req.CreateUserAccount, err error) {
-	defer func(rc io.ReadCloser) {
-		err := rc.Close()
-		if err != nil {
-			println("erro no rc")
-		}
-	}(rc)
+	defer rc.Close()
 
 	body, err := io.ReadAll(rc)
 	if err != nil {
