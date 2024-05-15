@@ -15,6 +15,7 @@ type Repo struct {
 
 	UserAccount *UserAccount
 	Wallet      *Wallet
+	Currency    *Currency
 }
 
 func New(cfg *config.Config) (*Repo, error) {
@@ -37,6 +38,7 @@ func New(cfg *config.Config) (*Repo, error) {
 		cli:         cli,
 		UserAccount: &UserAccount{cli: cli},
 		Wallet:      &Wallet{cli: cli},
+		Currency:    &Currency{cli: cli},
 	}, nil
 }
 

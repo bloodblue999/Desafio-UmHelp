@@ -1,3 +1,9 @@
 package consts
 
-const BrlId int64 = 1
+type CurrencyCode string
+
+const (
+	CurrencyBRL CurrencyCode = "BRL"
+	CurrencyEUR CurrencyCode = "EUR"
+	CurrencyUSD CurrencyCode = "USD"
+)
