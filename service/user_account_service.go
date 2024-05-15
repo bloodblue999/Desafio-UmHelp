@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"github.com/bloodblue999/umhelp/config"
 	"github.com/bloodblue999/umhelp/consts"
 	"github.com/bloodblue999/umhelp/mapper"
@@ -47,10 +48,19 @@ func (s UserAccountService) NewUserAccount(ctx context.Context, req *req.CreateU
 		return nil, err
 	}
 
+	currency, found, err := s.RepoManager.MySQL.Currency.FindByCurrencyCode(ctx, string(consts.CurrencyBRL), transaction)
+	if err != nil {
+		return nil, err
+	}
+
+	if !found {
+		return nil, fmt.Errorf("cannot find `%s` currency in database", string(consts.CurrencyBRL))
+	}
+
 	walletModel := &model.Wallet{
 		Alias:      "Default wallet",
 		OwnerID:    userID,
-		CurrencyID: consts.BrlId,
+		CurrencyID: currency.ID,
 	}
 	_, err = s.RepoManager.MySQL.Wallet.InsertWallet(ctx, walletModel, transaction)
 	if err != nil {

@@ -2,9 +2,9 @@ CREATE DATABASE IF NOT EXISTS um_help;
 USE um_help;
 
 DROP TABLE IF EXISTS `tb_money_transaction`;
-DROP TABLE IF EXISTS `tb_user_account`;
-DROP TABLE IF EXISTS `tb_money_transaction`;
 DROP TABLE IF EXISTS `tb_wallet`;
+DROP TABLE IF EXISTS `tb_user_account`;
+DROP TABLE IF EXISTS `tb_currency`;
 
 CREATE TABLE `tb_user_account`
 (
@@ -37,6 +37,7 @@ CREATE TABLE `tb_money_transaction`
 CREATE TABLE `tb_currency`
 (
     `currency_id` BIGINT AUTO_INCREMENT,
+    `code`        VARCHAR(4) NOT NULL UNIQUE,
     `symbol`      VARCHAR(4) NOT NULL UNIQUE,
     `created_at`  DATETIME   NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`  DATETIME   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -62,5 +63,11 @@ CREATE TABLE tb_wallet
 
 ) ENGINE = innodb;
 
-INSERT INTO tb_currency (symbol)
-VALUES ('BRL')
+INSERT INTO tb_currency (`code`, `symbol`)
+VALUES ('BRL', 'R$');
+
+INSERT INTO `tb_currency` (`code`, `symbol`)
+VALUES ('USD', '$');
+
+INSERT INTO `tb_currency` (`code`, `symbol`)
+VALUES ('EUR', '€');
