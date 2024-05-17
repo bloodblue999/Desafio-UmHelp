@@ -17,4 +17,7 @@ func Register(cfg *config.Config, svr *echo.Echo, ctrl *controller.Controller) {
 	wallet := root.Group("/wallet")
 	wallet.POST("/transaction", ctrl.WalletController.HandleNewMoneyTransaction)
 
+	auth := root.Group("/auth")
+	auth.POST("/login", ctrl.AuthController.HandleLoginRequest)
+
 }
