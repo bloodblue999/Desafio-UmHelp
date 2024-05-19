@@ -13,6 +13,7 @@ CREATE TABLE `tb_user_account`
     `first_name`      VARCHAR(30)  NOT NULL,
     `last_name`       VARCHAR(255) NOT NULL,
     `document`        VARCHAR(14)  NOT NULL UNIQUE,
+    `password`        VARCHAR(100) NOT NULL,
     `created_at`      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `deleted_at`      DATETIME     NULL,

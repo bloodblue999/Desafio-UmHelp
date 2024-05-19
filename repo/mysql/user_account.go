@@ -11,8 +11,8 @@ type UserAccount struct {
 }
 
 func (b *UserAccount) InsertUserAccount(ctx context.Context, userAccountModel *model.UserAccount, transaction *sqlx.Tx) (int64, error) {
-	query := `INSERT INTO um_help.tb_user_account (first_name, last_name, document)
-				VALUES (?, ?, ?)`
+	query := `INSERT INTO um_help.tb_user_account (first_name, last_name, document, password)
+				VALUES (?, ?, ?, ?)`
 
 	exec := b.cli.ExecContext
 	if transaction != nil {
@@ -23,6 +23,7 @@ func (b *UserAccount) InsertUserAccount(ctx context.Context, userAccountModel *m
 		userAccountModel.FirstName,
 		userAccountModel.LastName,
 		userAccountModel.Document,
+		userAccountModel.Password,
 	)
 	if err != nil {
 		return 0, err

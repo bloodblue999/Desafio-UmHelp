@@ -34,5 +34,9 @@ func GetAndValidateCreateUserAccount(rc io.ReadCloser) (r *req.CreateUserAccount
 		return nil, errors.New("invalid document number format. Correct format 123.456.789-00")
 	}
 
+	if len(r.Password) < 9 || len(r.Password) > 100 {
+		return nil, errors.New("invalid password length. Password must be between 9 and 100 length ")
+	}
+
 	return r, nil
 }
