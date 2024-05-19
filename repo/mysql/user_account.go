@@ -36,3 +36,39 @@ func (b *UserAccount) InsertUserAccount(ctx context.Context, userAccountModel *m
 
 	return userID, nil
 }
+
+func (b *UserAccount) SelectUserAccountByDocument(ctx context.Context, document string, transaction *sqlx.Tx) (*model.UserAccount, bool, error) {
+	query := `SELECT *
+		FROM tb_user_account
+		WHERE document = ? AND 
+		      deleted_at IS NULL`
+
+	exec := b.cli.QueryxContext
+	if transaction != nil {
+		exec = transaction.QueryxContext
+	}
+
+	rows, err := exec(ctx, query, document)
+	if err != nil {
+		return nil, false, err
+	}
+
+	defer rows.Close()
+
+	var userAccountModel model.UserAccount
+
+	isFound := rows.Next()
+	if !isFound {
+		return nil, false, nil
+	}
+
+	if err := rows.StructScan(&userAccountModel); err != nil {
+		return nil, false, err
+	}
+
+	if rows.Err() != nil {
+		return nil, false, rows.Err()
+	}
+
+	return &userAccountModel, true, nil
+}

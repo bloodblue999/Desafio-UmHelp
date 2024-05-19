@@ -20,7 +20,7 @@ func (r *Currency) FindByCurrencyCode(ctx context.Context, code string, tx *sqlx
 		    updated_at
 		    FROM tb_currency 
          WHERE 
-             code = 'BRL' AND
+             code = ? AND
              deleted_at IS NULL
 `
 	exec := r.cli.QueryxContext
@@ -28,7 +28,7 @@ func (r *Currency) FindByCurrencyCode(ctx context.Context, code string, tx *sqlx
 		exec = tx.QueryxContext
 	}
 
-	rows, err := exec(ctx, query)
+	rows, err := exec(ctx, query, code)
 	if err != nil {
 		return nil, false, err
 	}

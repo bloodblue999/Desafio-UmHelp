@@ -65,7 +65,7 @@ func Get() *Config {
 			JWSPrivateKey:            viper.GetString("JWS_PRIVATE_KEY"),
 			JWSPublicKey:             viper.GetString("JWS_PUBLIC_KEY"),
 			JWSExpirationTimeInHours: viper.GetInt64("JWS_EXPIRATION_TIME_IN_HOURS"),
-			HS256Password:            viper.GetString("H256_PASSWORD"),
+			HS256Password:            viper.GetString("HS256_PASSWORD"),
 		},
 	}
 }
