@@ -8,7 +8,7 @@ import (
 	"github.com/bloodblue999/umhelp/presenter/req"
 	"github.com/bloodblue999/umhelp/presenter/res"
 	"github.com/bloodblue999/umhelp/repo"
-	"github.com/bloodblue999/umhelp/util/resutil"
+	"github.com/bloodblue999/umhelp/util/cryptoutil"
 	"github.com/rs/zerolog"
 	"time"
 )
@@ -17,10 +17,10 @@ type AuthService struct {
 	Config      *config.Config
 	Logger      *zerolog.Logger
 	RepoManager *repo.RepoManager
-	CryptoUtil  *resutil.CryptoUtil
+	CryptoUtil  *cryptoutil.CryptoUtil
 }
 
-func NewAuthService(cfg *config.Config, logger *zerolog.Logger, repo *repo.RepoManager, cryptoUtil *resutil.CryptoUtil) *AuthService {
+func NewAuthService(cfg *config.Config, logger *zerolog.Logger, repo *repo.RepoManager, cryptoUtil *cryptoutil.CryptoUtil) *AuthService {
 	return &AuthService{
 		Config:      cfg,
 		Logger:      logger,

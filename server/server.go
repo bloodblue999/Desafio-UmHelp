@@ -6,6 +6,7 @@ import (
 	"github.com/bloodblue999/umhelp/server/controller"
 	"github.com/bloodblue999/umhelp/server/middleware"
 	"github.com/bloodblue999/umhelp/server/router"
+	"github.com/bloodblue999/umhelp/util/cryptoutil"
 	"sync"
 
 	echoadapter "github.com/awslabs/aws-lambda-go-api-proxy/echo"
@@ -25,7 +26,7 @@ type Server struct {
 	ctrl   *controller.Controller
 }
 
-func New(cfg *config.Config, logger *zerolog.Logger, ctrl *controller.Controller) *Server {
+func New(cfg *config.Config, logger *zerolog.Logger, ctrl *controller.Controller, cryptoUtil *cryptoutil.CryptoUtil) *Server {
 	once.Do(func() {
 		svr := echo.New()
 
@@ -33,7 +34,7 @@ func New(cfg *config.Config, logger *zerolog.Logger, ctrl *controller.Controller
 		svr.HidePort = true
 
 		middleware.SetMiddlewares(svr, cfg)
-		router.Register(cfg, svr, ctrl)
+		router.Register(cfg, svr, ctrl, cryptoUtil)
 
 		instance = &Server{
 			cfg:    cfg,

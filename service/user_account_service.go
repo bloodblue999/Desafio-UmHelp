@@ -11,7 +11,7 @@ import (
 	"github.com/bloodblue999/umhelp/presenter/req"
 	"github.com/bloodblue999/umhelp/presenter/res"
 	"github.com/bloodblue999/umhelp/repo"
-	"github.com/bloodblue999/umhelp/util/resutil"
+	"github.com/bloodblue999/umhelp/util/cryptoutil"
 	"github.com/rs/zerolog"
 )
 
@@ -19,10 +19,10 @@ type UserAccountService struct {
 	Config      *config.Config
 	Logger      *zerolog.Logger
 	RepoManager *repo.RepoManager
-	CryptoUtil  *resutil.CryptoUtil
+	CryptoUtil  *cryptoutil.CryptoUtil
 }
 
-func NewUserAccountService(cfg *config.Config, logger *zerolog.Logger, repo *repo.RepoManager, cryptoUtil *resutil.CryptoUtil) *UserAccountService {
+func NewUserAccountService(cfg *config.Config, logger *zerolog.Logger, repo *repo.RepoManager, cryptoUtil *cryptoutil.CryptoUtil) *UserAccountService {
 	return &UserAccountService{
 		Config:      cfg,
 		Logger:      logger,

@@ -72,3 +72,39 @@ func (b *UserAccount) SelectUserAccountByDocument(ctx context.Context, document 
 
 	return &userAccountModel, true, nil
 }
+
+func (b *UserAccount) SelectUserByID(ctx context.Context, id int64, tx *sqlx.Tx) (*model.UserAccount, bool, error) {
+	query := `SELECT *
+		FROM tb_user_account
+		WHERE user_account_id = ? AND 
+		      deleted_at IS NULL`
+
+	exec := b.cli.QueryxContext
+	if tx != nil {
+		exec = tx.QueryxContext
+	}
+
+	rows, err := exec(ctx, query, id)
+	if err != nil {
+		return nil, false, err
+	}
+
+	defer rows.Close()
+
+	var userAccountModel model.UserAccount
+
+	isFound := rows.Next()
+	if !isFound {
+		return nil, false, nil
+	}
+
+	if err := rows.StructScan(&userAccountModel); err != nil {
+		return nil, false, err
+	}
+
+	if rows.Err() != nil {
+		return nil, false, rows.Err()
+	}
+
+	return &userAccountModel, true, nil
+}

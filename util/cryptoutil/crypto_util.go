@@ -1,4 +1,4 @@
-package resutil
+package cryptoutil
 
 import (
 	"crypto/ed25519"
@@ -18,7 +18,7 @@ type CryptoUtil struct {
 	cfg        *config.Config
 }
 
-func NewCryptService(cfg *config.Config) (*CryptoUtil, error) {
+func NewCryptUtil(cfg *config.Config) (*CryptoUtil, error) {
 	privateKey, err := parsePrivateKey(cfg.CryptoConfig.JWSPrivateKey)
 	if err != nil {
 		return nil, err
@@ -38,6 +38,7 @@ func NewCryptService(cfg *config.Config) (*CryptoUtil, error) {
 }
 
 func parsePrivateKey(key string) (ed25519.PrivateKey, error) {
+	// TODO: CHANGE PRIVATE KEY PARSE
 	keyBytes, err := base64.StdEncoding.DecodeString(key)
 	if err != nil {
 		return nil, err
@@ -51,6 +52,8 @@ func parsePrivateKey(key string) (ed25519.PrivateKey, error) {
 }
 
 func parsePublicKey(key string) (ed25519.PublicKey, error) {
+	// TODO: CHANGE PUBLIC KEY PARSE
+
 	keyBytes, err := base64.StdEncoding.DecodeString(key)
 	if err != nil {
 		return nil, err
@@ -63,12 +66,12 @@ func parsePublicKey(key string) (ed25519.PublicKey, error) {
 	return keyBytes, nil
 }
 
-func (crypto *CryptoUtil) CreateASignedToken(subjectID string) (string, error) {
+func (crypto *CryptoUtil) CreateASignedToken(subjectPublicID string) (string, error) {
 	jwtTokenConfig := jwt.NewWithClaims(
 		jwt.SigningMethodEdDSA,
 		jwt.MapClaims{
 			"iss": "UmHelp",
-			"sub": subjectID,
+			"sub": subjectPublicID,
 			"iat": time.Now().Unix(),
 			"exp": time.Now().Add(time.Hour * time.Duration(crypto.cfg.CryptoConfig.JWSExpirationTimeInHours)).Unix(),
 		},

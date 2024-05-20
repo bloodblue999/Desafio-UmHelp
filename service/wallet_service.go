@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/bloodblue999/umhelp/config"
 	"github.com/bloodblue999/umhelp/mapper"
@@ -43,7 +44,7 @@ func (s WalletService) CreateWallet(ctx context.Context, alias string, ownerID, 
 	return mapper.WalletModelToRes(walletModel), nil
 }
 
-func (s WalletService) NewMoneyTransaction(ctx context.Context, req *req.CreateMoneyTransaction) (*res.Wallet, error) {
+func (s WalletService) NewMoneyTransaction(ctx context.Context, req *req.CreateMoneyTransaction, subjectPublicId string) (*res.Wallet, error) {
 	tx, err := s.RepoManager.MySQL.BeginTransaction(ctx, sql.LevelSerializable)
 	if err != nil {
 		return nil, err
@@ -56,10 +57,8 @@ func (s WalletService) NewMoneyTransaction(ctx context.Context, req *req.CreateM
 		return nil, err
 	}
 
-	// TODO: USE AUTHENTICATION TO VERIFY IF SENDER WALLET BELONGS TO REQUEST SENDER
-
 	if senderWalletModel.Balance < req.MoneyValue {
-		return nil, fmt.Errorf("insuficient balance in sender wallet")
+		return nil, errors.New("insuficient balance in sender wallet")
 	}
 
 	receiverWalletModel, err := findWalletById(ctx, s.RepoManager, tx, req.ReceiverID)
@@ -68,7 +67,16 @@ func (s WalletService) NewMoneyTransaction(ctx context.Context, req *req.CreateM
 	}
 
 	if senderWalletModel.CurrencyID != receiverWalletModel.CurrencyID {
-		return nil, fmt.Errorf("diferent currency between wallets")
+		return nil, errors.New("different currency between wallets")
+	}
+
+	senderUserModel, err := findUserAccountById(ctx, s.RepoManager, tx, senderWalletModel.OwnerID)
+	if err != nil {
+		return nil, err
+	}
+
+	if senderUserModel.PublicID != subjectPublicId {
+		return nil, errors.New("sender owner id is different from authentication id")
 	}
 
 	senderWalletModel.Balance = senderWalletModel.Balance - req.MoneyValue
@@ -102,4 +110,17 @@ func findWalletById(ctx context.Context, repo *repo.RepoManager, tx *sqlx.Tx, id
 	}
 
 	return walletModel, nil
+}
+
+func findUserAccountById(ctx context.Context, repo *repo.RepoManager, tx *sqlx.Tx, id int64) (*model.UserAccount, error) {
+	userModel, isFound, err := repo.MySQL.UserAccount.SelectUserByID(ctx, id, tx)
+	if err != nil {
+		return nil, err
+	}
+
+	if !isFound {
+		return nil, fmt.Errorf("owner user id `%d` not founded in database", id)
+	}
+
+	return userModel, nil
 }
