@@ -11,6 +11,7 @@ import (
 	"github.com/bloodblue999/umhelp/presenter/req"
 	"github.com/bloodblue999/umhelp/presenter/res"
 	"github.com/bloodblue999/umhelp/repo"
+	"github.com/bloodblue999/umhelp/util/cryptoutil"
 	"github.com/rs/zerolog"
 )
 
@@ -18,14 +19,15 @@ type UserAccountService struct {
 	Config      *config.Config
 	Logger      *zerolog.Logger
 	RepoManager *repo.RepoManager
-	Services    *Service
+	CryptoUtil  *cryptoutil.CryptoUtil
 }
 
-func NewUserAccountService(cfg *config.Config, logger *zerolog.Logger, repo *repo.RepoManager) *UserAccountService {
+func NewUserAccountService(cfg *config.Config, logger *zerolog.Logger, repo *repo.RepoManager, cryptoUtil *cryptoutil.CryptoUtil) *UserAccountService {
 	return &UserAccountService{
 		Config:      cfg,
 		Logger:      logger,
 		RepoManager: repo,
+		CryptoUtil:  cryptoUtil,
 	}
 }
 
@@ -34,6 +36,7 @@ func (s UserAccountService) NewUserAccount(ctx context.Context, req *req.CreateU
 		FirstName: req.FirstName,
 		LastName:  req.LastName,
 		Document:  req.Document,
+		Password:  s.CryptoUtil.HashPassword(req.Password),
 	}
 
 	transaction, err := s.RepoManager.MySQL.BeginTransaction(ctx, sql.LevelReadCommitted)

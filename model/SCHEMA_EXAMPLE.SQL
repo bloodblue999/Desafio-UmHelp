@@ -9,9 +9,11 @@ DROP TABLE IF EXISTS `tb_currency`;
 CREATE TABLE `tb_user_account`
 (
     `user_account_id` BIGINT AUTO_INCREMENT,
+    `public_id`       VARCHAR(36)  NOT NULL DEFAULT (UUID()),
     `first_name`      VARCHAR(30)  NOT NULL,
     `last_name`       VARCHAR(255) NOT NULL,
     `document`        VARCHAR(14)  NOT NULL UNIQUE,
+    `password`        VARCHAR(100) NOT NULL,
     `created_at`      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at`      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `deleted_at`      DATETIME     NULL,

@@ -11,8 +11,8 @@ type UserAccount struct {
 }
 
 func (b *UserAccount) InsertUserAccount(ctx context.Context, userAccountModel *model.UserAccount, transaction *sqlx.Tx) (int64, error) {
-	query := `INSERT INTO um_help.tb_user_account (first_name, last_name, document)
-				VALUES (?, ?, ?)`
+	query := `INSERT INTO um_help.tb_user_account (first_name, last_name, document, password)
+				VALUES (?, ?, ?, ?)`
 
 	exec := b.cli.ExecContext
 	if transaction != nil {
@@ -23,6 +23,7 @@ func (b *UserAccount) InsertUserAccount(ctx context.Context, userAccountModel *m
 		userAccountModel.FirstName,
 		userAccountModel.LastName,
 		userAccountModel.Document,
+		userAccountModel.Password,
 	)
 	if err != nil {
 		return 0, err
@@ -34,4 +35,76 @@ func (b *UserAccount) InsertUserAccount(ctx context.Context, userAccountModel *m
 	}
 
 	return userID, nil
+}
+
+func (b *UserAccount) SelectUserAccountByDocument(ctx context.Context, document string, transaction *sqlx.Tx) (*model.UserAccount, bool, error) {
+	query := `SELECT *
+		FROM tb_user_account
+		WHERE document = ? AND 
+		      deleted_at IS NULL`
+
+	exec := b.cli.QueryxContext
+	if transaction != nil {
+		exec = transaction.QueryxContext
+	}
+
+	rows, err := exec(ctx, query, document)
+	if err != nil {
+		return nil, false, err
+	}
+
+	defer rows.Close()
+
+	var userAccountModel model.UserAccount
+
+	isFound := rows.Next()
+	if !isFound {
+		return nil, false, nil
+	}
+
+	if err := rows.StructScan(&userAccountModel); err != nil {
+		return nil, false, err
+	}
+
+	if rows.Err() != nil {
+		return nil, false, rows.Err()
+	}
+
+	return &userAccountModel, true, nil
+}
+
+func (b *UserAccount) SelectUserByID(ctx context.Context, id int64, tx *sqlx.Tx) (*model.UserAccount, bool, error) {
+	query := `SELECT *
+		FROM tb_user_account
+		WHERE user_account_id = ? AND 
+		      deleted_at IS NULL`
+
+	exec := b.cli.QueryxContext
+	if tx != nil {
+		exec = tx.QueryxContext
+	}
+
+	rows, err := exec(ctx, query, id)
+	if err != nil {
+		return nil, false, err
+	}
+
+	defer rows.Close()
+
+	var userAccountModel model.UserAccount
+
+	isFound := rows.Next()
+	if !isFound {
+		return nil, false, nil
+	}
+
+	if err := rows.StructScan(&userAccountModel); err != nil {
+		return nil, false, err
+	}
+
+	if rows.Err() != nil {
+		return nil, false, rows.Err()
+	}
+
+	return &userAccountModel, true, nil
 }

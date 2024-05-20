@@ -48,7 +48,7 @@ func (r *Wallet) FindById(ctx context.Context, id int64, tx *sqlx.Tx) (*model.Wa
 		    updated_at
 		    FROM tb_wallet
     	     WHERE
-    	         owner_id = ? AND 
+    	         wallet_id = ? AND 
     	         deleted_at IS NULL
     	         `
 
