@@ -45,7 +45,7 @@ func (s WalletService) CreateWallet(ctx context.Context, alias string, ownerID, 
 	return mapper.WalletModelToRes(walletModel), nil
 }
 
-func (s WalletService) NewMoneyTransaction(ctx context.Context, req *req.CreateMoneyTransaction, claims *jwt.MapClaims) (*res.Wallet, error) {
+func (s WalletService) NewMoneyTransaction(ctx context.Context, req *req.CreateMoneyTransaction, claims jwt.MapClaims) (*res.Wallet, error) {
 	tx, err := s.RepoManager.MySQL.BeginTransaction(ctx, sql.LevelSerializable)
 	if err != nil {
 		return nil, err

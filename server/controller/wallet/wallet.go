@@ -1,11 +1,11 @@
 package wallet
 
 import (
-	"errors"
+	"github.com/bloodblue999/umhelp/consts"
 	"github.com/bloodblue999/umhelp/service"
+	"github.com/bloodblue999/umhelp/util/claimsutil"
 	"github.com/bloodblue999/umhelp/util/resutil"
 	"github.com/bloodblue999/umhelp/validation"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
 	"net/http"
@@ -30,7 +30,8 @@ func (ctrl *Controller) HandleNewMoneyTransaction(ctx echo.Context) error {
 	if err != nil {
 		return ctx.JSON(ctrl.resutil.Wrap(nil, err, http.StatusBadRequest))
 	}
-	claims, err := getClaims(ctx.Get("claims"))
+
+	claims, err := claimsutil.ParseToMapClaims(ctx.Get(consts.ClaimsName))
 	if err != nil {
 		return ctx.JSON(ctrl.resutil.Wrap(nil, err, http.StatusInternalServerError))
 	}
@@ -41,13 +42,4 @@ func (ctrl *Controller) HandleNewMoneyTransaction(ctx echo.Context) error {
 	}
 
 	return ctx.JSON(ctrl.resutil.Wrap(data, nil, http.StatusCreated))
-}
-
-func getClaims(claimsInterface interface{}) (*jwt.MapClaims, error) {
-	claims, ok := claimsInterface.(jwt.MapClaims)
-	if !ok {
-		return nil, errors.New("error, cannot convert claims")
-	}
-
-	return &claims, nil
 }

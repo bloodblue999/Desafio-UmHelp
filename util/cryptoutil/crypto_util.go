@@ -8,7 +8,10 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/bloodblue999/umhelp/config"
+	"github.com/bloodblue999/umhelp/consts"
+	"github.com/bloodblue999/umhelp/entity"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"time"
 )
 
@@ -66,30 +69,54 @@ func parsePublicKey(key string) (ed25519.PublicKey, error) {
 	return keyBytes, nil
 }
 
-type TokenJWT struct {
-	Issuer     string `json:"iss"`
-	Subject    string `json:"sub"`
-	IssuedAt   int64  `json:"iat"`
-	Expiration int64  `json:"exp"`
-	jwt.RegisteredClaims
+type TokenResult struct {
+	SignID         string
+	AccessToken    string
+	ExpirationTime time.Time
+	RefreshToken   string
 }
 
-func (crypto *CryptoUtil) CreateASignedToken(subjectPublicID string) (string, error) {
-	jwtTokenConfig := jwt.NewWithClaims(
+func (crypto *CryptoUtil) SignUserToken(cfg *config.Config, subjectPublicID string) (*TokenResult, error) {
+	expirationTime := time.Now().Add(time.Hour * time.Duration(crypto.cfg.CryptoConfig.JWSExpirationTimeInHours))
+	signID := uuid.New().String()
+
+	jwtAccessTokenConfig := jwt.NewWithClaims(
 		jwt.SigningMethodEdDSA,
-		TokenJWT{
-			Issuer:     "UmHelp",
+		entity.TokenJWT{
+			SignID:     signID,
+			Issuer:     cfg.InternalConfig.ServiceName,
 			Subject:    subjectPublicID,
 			IssuedAt:   time.Now().Unix(),
-			Expiration: time.Now().Add(time.Hour * time.Duration(crypto.cfg.CryptoConfig.JWSExpirationTimeInHours)).Unix(),
+			Expiration: expirationTime.Unix(),
+			TokenType:  consts.AccessTokenType,
 		},
 	)
-	tokenStr, err := jwtTokenConfig.SignedString(crypto.privateKey)
+	accessTokenStr, err := jwtAccessTokenConfig.SignedString(crypto.privateKey)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return tokenStr, nil
+	jwtRefreshTokenConfig := jwt.NewWithClaims(
+		jwt.SigningMethodEdDSA,
+		entity.TokenJWT{
+			SignID:    signID,
+			Issuer:    cfg.InternalConfig.ServiceName,
+			Subject:   subjectPublicID,
+			IssuedAt:  time.Now().Unix(),
+			TokenType: consts.RefreshTokenType,
+		},
+	)
+	refreshTokenStr, err := jwtRefreshTokenConfig.SignedString(crypto.privateKey)
+	if err != nil {
+		return nil, err
+	}
+
+	return &TokenResult{
+		SignID:         signID,
+		AccessToken:    accessTokenStr,
+		ExpirationTime: expirationTime,
+		RefreshToken:   refreshTokenStr,
+	}, nil
 }
 
 func (crypto *CryptoUtil) VerifyASignatureToken(token string) (jwt.Claims, error) {
@@ -102,7 +129,7 @@ func (crypto *CryptoUtil) VerifyASignatureToken(token string) (jwt.Claims, error
 	return validator.Claims, err
 }
 
-func (crypto *CryptoUtil) HashPassword(password string) string {
+func (crypto *CryptoUtil) HashString(password string) string {
 	mac := hmac.New(sha256.New, []byte(crypto.cfg.CryptoConfig.HS256Password))
 	mac.Write([]byte(password))
 
