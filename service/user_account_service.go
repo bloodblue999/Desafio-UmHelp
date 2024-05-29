@@ -36,7 +36,7 @@ func (s UserAccountService) NewUserAccount(ctx context.Context, req *req.CreateU
 		FirstName: req.FirstName,
 		LastName:  req.LastName,
 		Document:  req.Document,
-		Password:  s.CryptoUtil.HashPassword(req.Password),
+		Password:  s.CryptoUtil.HashString(req.Password),
 	}
 
 	transaction, err := s.RepoManager.MySQL.BeginTransaction(ctx, sql.LevelReadCommitted)
