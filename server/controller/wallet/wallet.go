@@ -5,6 +5,7 @@ import (
 	"github.com/bloodblue999/umhelp/service"
 	"github.com/bloodblue999/umhelp/util/resutil"
 	"github.com/bloodblue999/umhelp/validation"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog"
 	"net/http"
@@ -29,13 +30,12 @@ func (ctrl *Controller) HandleNewMoneyTransaction(ctx echo.Context) error {
 	if err != nil {
 		return ctx.JSON(ctrl.resutil.Wrap(nil, err, http.StatusBadRequest))
 	}
-
-	subjectID, err := getSubjectPublicId(ctx.Get("subjectID"))
+	claims, err := getClaims(ctx.Get("claims"))
 	if err != nil {
 		return ctx.JSON(ctrl.resutil.Wrap(nil, err, http.StatusInternalServerError))
 	}
 
-	data, err := ctrl.services.Wallet.NewMoneyTransaction(ctx.Request().Context(), req, subjectID)
+	data, err := ctrl.services.Wallet.NewMoneyTransaction(ctx.Request().Context(), req, claims)
 	if err != nil {
 		return ctx.JSON(ctrl.resutil.Wrap(nil, err, http.StatusInternalServerError))
 	}
@@ -43,11 +43,11 @@ func (ctrl *Controller) HandleNewMoneyTransaction(ctx echo.Context) error {
 	return ctx.JSON(ctrl.resutil.Wrap(data, nil, http.StatusCreated))
 }
 
-func getSubjectPublicId(claimsInterface interface{}) (string, error) {
-	subjectID, ok := claimsInterface.(string)
+func getClaims(claimsInterface interface{}) (*jwt.MapClaims, error) {
+	claims, ok := claimsInterface.(jwt.MapClaims)
 	if !ok {
-		return "", errors.New("error, cannot convert claims")
+		return nil, errors.New("error, cannot convert claims")
 	}
 
-	return subjectID, nil
+	return &claims, nil
 }

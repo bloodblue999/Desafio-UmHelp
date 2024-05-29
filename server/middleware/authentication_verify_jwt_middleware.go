@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"github.com/bloodblue999/umhelp/util/cryptoutil"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -26,6 +25,10 @@ func (m *Authenticate) AuthenticatedMiddleware(next echo.HandlerFunc) echo.Handl
 		}
 
 		authenticationSplited := strings.Split(authorizationHeader, " ")
+		if len(authenticationSplited) != 2 {
+			return ctx.JSON(http.StatusUnauthorized, "invalid authentication")
+		}
+
 		authorizationName, token := authenticationSplited[0], authenticationSplited[1]
 
 		if authorizationName != "Bearer" {
@@ -37,13 +40,7 @@ func (m *Authenticate) AuthenticatedMiddleware(next echo.HandlerFunc) echo.Handl
 			return ctx.JSON(http.StatusUnauthorized, err.Error())
 		}
 
-		subjectId, err := claims.GetSubject()
-		if err != nil {
-			fmt.Println(claims)
-			return ctx.JSON(http.StatusInternalServerError, err.Error())
-		}
-
-		ctx.Set("subjectID", subjectId)
+		ctx.Set("claims", claims)
 		return next(ctx)
 	}
 }

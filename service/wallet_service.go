@@ -11,6 +11,7 @@ import (
 	"github.com/bloodblue999/umhelp/presenter/req"
 	"github.com/bloodblue999/umhelp/presenter/res"
 	"github.com/bloodblue999/umhelp/repo"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/jmoiron/sqlx"
 	"github.com/rs/zerolog"
 )
@@ -44,7 +45,7 @@ func (s WalletService) CreateWallet(ctx context.Context, alias string, ownerID, 
 	return mapper.WalletModelToRes(walletModel), nil
 }
 
-func (s WalletService) NewMoneyTransaction(ctx context.Context, req *req.CreateMoneyTransaction, subjectPublicId string) (*res.Wallet, error) {
+func (s WalletService) NewMoneyTransaction(ctx context.Context, req *req.CreateMoneyTransaction, claims *jwt.MapClaims) (*res.Wallet, error) {
 	tx, err := s.RepoManager.MySQL.BeginTransaction(ctx, sql.LevelSerializable)
 	if err != nil {
 		return nil, err
@@ -75,7 +76,12 @@ func (s WalletService) NewMoneyTransaction(ctx context.Context, req *req.CreateM
 		return nil, err
 	}
 
-	if senderUserModel.PublicID != subjectPublicId {
+	subjectID, err := claims.GetSubject()
+	if err != nil {
+		return nil, err
+	}
+
+	if senderUserModel.PublicID != subjectID {
 		return nil, errors.New("sender owner id is different from authentication id")
 	}
 
