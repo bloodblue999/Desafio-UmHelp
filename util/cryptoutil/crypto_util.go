@@ -66,14 +66,22 @@ func parsePublicKey(key string) (ed25519.PublicKey, error) {
 	return keyBytes, nil
 }
 
+type TokenJWT struct {
+	Issuer     string `json:"iss"`
+	Subject    string `json:"sub"`
+	IssuedAt   int64  `json:"iat"`
+	Expiration int64  `json:"exp"`
+	jwt.RegisteredClaims
+}
+
 func (crypto *CryptoUtil) CreateASignedToken(subjectPublicID string) (string, error) {
 	jwtTokenConfig := jwt.NewWithClaims(
 		jwt.SigningMethodEdDSA,
-		jwt.MapClaims{
-			"iss": "UmHelp",
-			"sub": subjectPublicID,
-			"iat": time.Now().Unix(),
-			"exp": time.Now().Add(time.Hour * time.Duration(crypto.cfg.CryptoConfig.JWSExpirationTimeInHours)).Unix(),
+		TokenJWT{
+			Issuer:     "UmHelp",
+			Subject:    subjectPublicID,
+			IssuedAt:   time.Now().Unix(),
+			Expiration: time.Now().Add(time.Hour * time.Duration(crypto.cfg.CryptoConfig.JWSExpirationTimeInHours)).Unix(),
 		},
 	)
 	tokenStr, err := jwtTokenConfig.SignedString(crypto.privateKey)
